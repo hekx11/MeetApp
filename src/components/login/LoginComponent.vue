@@ -1,19 +1,51 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
 const registerToggle = ref(false)
+const loginName = ref('')
+const loginPassword = ref('')
+const registerName = ref('')
+const registerEmail = ref('')
+const registerPassword = ref('')
+
 </script>
+
 <template>
     <div id="login-view">
-        <div>
-            <h1>Login</h1>
+        <div class="container">
+            <v-icon v-if="registerToggle" name="bi-arrow-left" scale="2" @click="registerToggle = !registerToggle" style="cursor:pointer"></v-icon>
+
+            <h1 v-if="!registerToggle">Log In</h1>
+            <h1 v-if="registerToggle">Sign Up</h1>
+
             <div class="login-view-form">
-                <form v-if="!registerToggle">
-                    <input required type="email" id="loginEmail" placeholder="Email@example.com">
-                    <input required type="password" id="loginPassword" placeholder="Password">
+                <form v-if="!registerToggle" id="loginForm">
+                    <input required type="name" v-model="loginName" placeholder="Name">
+                    <input required type="password" v-model="loginPassword" placeholder="Password">
+                </form>
+
+                <form v-if="registerToggle" id="registerForm">
+                    <input required type="name" v-model="registerName" placeholder="John">
+                    <input required type="email" v-model="registerEmail" placeholder="Email@example.com">
+                    <input required type="password" v-model="registerPassword" placeholder="Password">
                 </form>
             </div>
+
+            <div class="login-view-buttons">
+                <button v-if="!registerToggle" style="margin-right:10px;background-color:#66DB87;color:white;">
+                    Log In
+                </button>
+
+                <button v-if="!registerToggle" @click="registerToggle = !registerToggle"
+                    style="background-color: #3E4372; color:white;">
+                    Sign Up
+                </button>
+
+                <button v-if="registerToggle" style="background-color: #3E4372; color:white;">
+                    Sign Up
+                </button>
+            </div>
         </div>
-        <button @click="registerToggle = !registerToggle">Register</button>
     </div>
 </template>
 <style scoped>
@@ -25,6 +57,22 @@ const registerToggle = ref(false)
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.login-view-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.login-view-buttons button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 0.25px solid #000000;
+    font-size: 1rem;
+    background-color: #EEEDFF;
+    color: #000000;
+    cursor: pointer;
 }
 
 h1 {
