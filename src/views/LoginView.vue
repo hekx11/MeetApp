@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import TheLogin from '../components/TheLogin.vue'
+import TheLogin from '../components/login/TheLogin.vue'
 </script>
 
 <template>
-  <TheLogin />
+  <main>
+    <TheLogin />
+  </main>
 </template>
