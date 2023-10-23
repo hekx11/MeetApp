@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import router from '@/router';
+import { useFirestoreStore } from '@/stores/fireStoreDB';
+
+const store = useFirestoreStore()
 
 function logout() {
+    store.logoutStore()
     router.push('/login');
 }
 </script>
@@ -9,10 +13,10 @@ function logout() {
 <template>
     <nav class="navbar">
         <div class="navbar-logo">
-            <h1>MeetApp</h1>
+            <router-link to="/">MeetApp</router-link>
         </div>
         <div class="navbar-right">
-            <router-link to="/">Profile</router-link>
+            <router-link to="/profile">Profile</router-link>
             <button @click="logout">Logout</button>
         </div>
     </nav>

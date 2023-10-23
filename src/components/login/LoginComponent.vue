@@ -1,26 +1,38 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useFirestoreStore } from '@/stores/fireStoreDB';
+import router from '@/router';
 
 const registerToggle = ref(false)
-const loginName = ref('')
+const loginEmail = ref('')
 const loginPassword = ref('')
 const registerName = ref('')
 const registerEmail = ref('')
 const registerPassword = ref('')
+const store = useFirestoreStore()
+function logIn(login: string, password: string) {
+    store.logInStore(login, password)
+    router.push('/')
+}
+function registerForm(name: string, email: string, password: string) {
+    store.registerStore(name, email, password)
+    router.push('/')
+}
 
 </script>
 
 <template>
     <div id="login-view">
         <div class="container">
-            <v-icon v-if="registerToggle" name="bi-arrow-left" scale="2" @click="registerToggle = !registerToggle" style="cursor:pointer"></v-icon>
+            <v-icon v-if="registerToggle" name="bi-arrow-left" scale="2" @click="registerToggle = !registerToggle"
+                style="cursor:pointer"></v-icon>
 
             <h1 v-if="!registerToggle">Log In</h1>
             <h1 v-if="registerToggle">Sign Up</h1>
 
             <div class="login-view-form">
                 <form v-if="!registerToggle" id="loginForm">
-                    <input required type="name" v-model="loginName" placeholder="Name">
+                    <input required type="name" v-model="loginEmail" placeholder="Email@example.com">
                     <input required type="password" v-model="loginPassword" placeholder="Password">
                 </form>
 
@@ -32,7 +44,8 @@ const registerPassword = ref('')
             </div>
 
             <div class="login-view-buttons">
-                <button v-if="!registerToggle" style="margin-right:10px;background-color:#66DB87;color:white;">
+                <button v-if="!registerToggle" @click="logIn(loginEmail, loginPassword)"
+                    style="margin-right:10px;background-color:#66DB87;color:white;">
                     Log In
                 </button>
 
@@ -41,7 +54,8 @@ const registerPassword = ref('')
                     Sign Up
                 </button>
 
-                <button v-if="registerToggle" style="background-color: #3E4372; color:white;">
+                <button v-if="registerToggle" style="background-color: #3E4372; color:white;"
+                    @click="registerForm(registerEmail,registerPassword,registerName)">
                     Sign Up
                 </button>
             </div>
