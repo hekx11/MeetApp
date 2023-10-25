@@ -2,7 +2,5 @@
 import ProfileSideBar from './ProfileSideBar.vue'
 </script>
 <template>
-    <div>
-        <ProfileSideBar />
-    </div>
+    <ProfileSideBar />
 </template>

@@ -6,3 +6,9 @@ import TheHome from "../components/home/TheHome.vue"
         <TheHome />
     </main>
 </template>
+<style>
+main{
+    height: 100%;
+    height: calc(100% - 65px);
+}
+</style>

@@ -6,14 +6,13 @@ const store = useFirestoreStore()
 
 function logout() {
     store.logoutStore()
-    router.push('/login');
 }
 </script>
 
 <template>
     <nav class="navbar">
         <div class="navbar-logo">
-            <router-link to="/">MeetApp</router-link>
+            <h2><router-link to="/">MeetApp</router-link></h2>  
         </div>
         <div class="navbar-right">
             <router-link to="/profile">Profile</router-link>
@@ -30,10 +29,13 @@ function logout() {
     padding: 1rem;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 65px;
 }
-
-.navbar-logo img {
-    height: 2rem;
+.navbar-logo router-link{
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
 }
 
 .navbar-right {

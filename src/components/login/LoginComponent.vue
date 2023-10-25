@@ -12,11 +12,9 @@ const registerPassword = ref('')
 const store = useFirestoreStore()
 function logIn(login: string, password: string) {
     store.logInStore(login, password)
-    router.push('/')
 }
 function registerForm(name: string, email: string, password: string) {
     store.registerStore(name, email, password)
-    router.push('/')
 }
 
 </script>
