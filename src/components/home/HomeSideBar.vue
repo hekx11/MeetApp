@@ -64,9 +64,8 @@ const toggleAccordion = async (i: number): Promise<void> => {
 }
 
 #home-side-bar {
-    width: 300px;
+    width: 30%;
     height: 100%;
-
     display: flex;
     flex-direction: column;
     align-items: center;
