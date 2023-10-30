@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { app, auth, db } from "../firestore/init";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, GeoPoint } from "firebase/firestore";
 import router from "@/router";
 
 import {
@@ -22,6 +22,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
       name: "",
       email: "",
     },
+    eventsList: [] as any[],
   }),
   actions: {
     async getUserData({ user }: { user: User }) {
@@ -32,6 +33,29 @@ export const useFirestoreStore = defineStore("firestoredb", {
         (userItem) => userItem.email === user.email
       );
       return userExists;
+    },
+    getEventsList() {
+      return this.eventsList;
+    },
+    async setEventsList() {
+      const eventsCollection = collection(db, "events");
+      const eventsSnapshot = await getDocs(eventsCollection);
+      const eventsList = eventsSnapshot.docs.map((doc) => doc.data());
+      console.log(eventsList[0]);
+      this.eventsList = eventsList;
+    },
+  
+    async addEvent( event: any) {
+      const eventsCollection = collection(db, "events");
+      await addDoc(eventsCollection, {
+        name: event.name,
+        description: event.description,
+        location: new GeoPoint(event.location.lat, event.location.lng),
+        date: event.date,
+        time: event.time,
+        creator: this.user.data?.uid,
+      });
+      await this.setEventsList();
     },
     async registerStore(email: string, password: string, name: string) {
       const response = await createUserWithEmailAndPassword(
@@ -46,6 +70,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
           displayName: name,
         });
         await this.addUserToDb({ user: response.user });
+        await this.setEventsList();
         router.push("/");
       } else {
         throw new Error("registration failed");
@@ -57,6 +82,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
         await this.addUserToDb({ user: response.user });
         this.user.data = response.user;
         this.user.loggedIn = true;
+        await this.setEventsList();
         router.push("/");
       } else {
         throw new Error("login failed");

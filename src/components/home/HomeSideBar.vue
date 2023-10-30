@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { reactive } from "vue"
+import { useFirestoreStore } from '@/stores/fireStoreDB';
+import { reactive, onMounted } from "vue"
+const store = useFirestoreStore()
 const eventsListExample = [
     {
         "name": "Event 1 name",
@@ -14,6 +16,7 @@ const eventsListExample = [
         "description": "Event 3 description",
     }
 ]
+const eventsList = store.getEventsList()
 interface IsActive {
     [key: number]: boolean;
 }
@@ -32,8 +35,8 @@ const toggleAccordion = async (i: number): Promise<void> => {
         <div class="events-container">
             <h2>Events list</h2>
             <div class="events">
-                <div v-for="(item, id) in eventsListExample" :key="id" class="event-item">
-                    <div @click="() => toggleAccordion(id) ">
+                <div v-for="(item, id) in eventsList" :key="id" class="event-item">
+                    <div @click="() => toggleAccordion(id)">
                         <h3>{{ item.name }}</h3>
                         <p :class="{ 'is-open': !!isActive[id] }">{{ item.description }}</p>
                     </div>
