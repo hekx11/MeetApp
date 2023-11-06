@@ -1,50 +1,70 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
-import { reactive, onMounted } from "vue"
+import { reactive, ref } from "vue"
 const store = useFirestoreStore()
-const eventsListExample = [
-    {
-        "name": "Event 1 name",
-        "description": "Event 1 description",
-    },
-    {
-        "name": "Event 2 name",
-        "description": "Event 2 description",
-    },
-    {
-        "name": "Event 3 name",
-        "description": "Event 3 description",
-    }
-]
+
 const eventsList = store.getEventsList()
-interface IsActive {
-    [key: number]: boolean;
+const eventLocations = store.getLocations()
+const emit = defineEmits(['onpress', 'createevent'])
+const searchInput = ref('')
+const isActiveArray = reactive(Array(eventsList.length).fill(false))
+const previousActive = ref(-1)
+
+function createEvent() {
+    emit('createevent')
 }
+function pressed(id: number) {
+    const location = eventLocations[id]
+    emit('onpress', location)
+}
+function setActive(id: number) {
+    if(previousActive.value !== -1 && previousActive.value !== id) {
+        isActiveArray[previousActive.value] = false
+    }
+    previousActive.value = id
+    isActiveArray[id] = !isActiveArray[id]
+}
+function filterBySearch(searchInput: string) {
+    return eventsList.filter((item: any) => {
+        return item.name.toLowerCase().includes(searchInput.toLowerCase()) || item.description.toLowerCase().includes(searchInput.toLowerCase())
+    })
+}
+function checkAnyStillActive() {
+    for (let i = 0; i < isActiveArray.length; i++) {
+        if (isActiveArray[i]) {
+            return true
+        }
+    }
+    return false
+}
+function timestamptoDate(timestamp: any) {
+    const date = new Date(timestamp.seconds * 1000)
+    return date.toLocaleDateString()
+}
+defineExpose({
+    checkAnyStillActive
+})
 
-const isActive = reactive<IsActive>({});
-
-const toggleAccordion = async (i: number): Promise<void> => {
-    isActive[i] = isActive[i] ? !isActive[i] : true;
-};
 </script>
 <template>
     <div id="home-side-bar">
         <div class="search-box">
-            <input type="text" placeholder="Search" />
+            <input type="text" placeholder="Search" v-model="searchInput" />
         </div>
         <div class="events-container">
             <h2>Events list</h2>
             <div class="events">
-                <div v-for="(item, id) in eventsList" :key="id" class="event-item">
-                    <div @click="() => toggleAccordion(id)">
+                <div v-for="(item, id) in filterBySearch(searchInput)" :key="id" class="event-item">
+                    <div @click.prevent="setActive(id), pressed(id)">
                         <h3>{{ item.name }}</h3>
-                        <p :class="{ 'is-open': !!isActive[id] }">{{ item.description }}</p>
+                        <p>{{ timestamptoDate(item.date) }}</p>
+                        <p v-if="isActiveArray[id]">{{ item.description }}</p>
                     </div>
                 </div>
             </div>
         </div>
         <div class="create-event-btn">
-            <button>Create event</button>
+            <button @click="createEvent()">Create event</button>
         </div>
     </div>
 </template>

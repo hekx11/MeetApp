@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useFirestoreStore } from '@/stores/fireStoreDB';
-import router from '@/router';
+import { useForm } from 'vee-validate';
+
+const { values } = useForm();
 
 const registerToggle = ref(false)
 const loginEmail = ref('')

@@ -13,6 +13,7 @@
     "firebase": "^10.5.0",
     "oh-vue-icons": "^1.0.0-rc3",
     "pinia": "^2.1.7",
+    "vee-validate": "^4.11.8",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5",
     "vue3-google-map": "^0.18.0"

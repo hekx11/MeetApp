@@ -13,6 +13,10 @@ import {
 
 export const useFirestoreStore = defineStore("firestoredb", {
   state: () => ({
+    constEventIndexes: [] as {
+      realId: "",
+      index: 0,
+    },
     user: {
       loggedIn: false,
       data: null as User | null,
@@ -25,6 +29,18 @@ export const useFirestoreStore = defineStore("firestoredb", {
     eventsList: [] as any[],
   }),
   actions: {
+    getIndexByRealId(realId: string) { 
+      return this.constEventIndexes.find((item) => item.realId === realId)?.index
+    },
+    getLocations() {
+      const locations: GeoPoint[] = this.getEventsList().map(
+        (item: any) => item.location
+      );
+      return locations.map((item: GeoPoint) => ({
+        lat: item.latitude,
+        lng: item.longitude,
+      }));
+    },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
       const usersSnapshot = await getDocs(usersCollection);
@@ -40,12 +56,18 @@ export const useFirestoreStore = defineStore("firestoredb", {
     async setEventsList() {
       const eventsCollection = collection(db, "events");
       const eventsSnapshot = await getDocs(eventsCollection);
-      const eventsList = eventsSnapshot.docs.map((doc) => doc.data());
-      console.log(eventsList[0]);
+      const eventsList = eventsSnapshot.docs.reverse().map((doc) => doc.data());
       this.eventsList = eventsList;
+      this.eventsList.forEach((item, index) => {
+        this.constEventIndexes.push({
+          realId: item.id,
+          index: index
+        })
+      })
+      console.log(this.constEventIndexes[0])
     },
-  
-    async addEvent( event: any) {
+
+    async addEvent(event: any) {
       const eventsCollection = collection(db, "events");
       await addDoc(eventsCollection, {
         name: event.name,
@@ -105,5 +127,15 @@ export const useFirestoreStore = defineStore("firestoredb", {
         });
       }
     },
+    async addEventToDb(event: any) {
+      const eventsCollection = collection(db, "events");
+      await addDoc(eventsCollection, {
+        name: event.name,
+        description: event.description,
+        location: new GeoPoint(event.location.lat, event.location.lng),
+        date: event.date,
+        creator: this.user.data?.uid,
+      });
+    }
   },
 });
