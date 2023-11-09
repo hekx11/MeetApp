@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useStoreAuth } from "@/stores/storeAuth";
+import { useStoreEvents } from "@/stores/storeEvents";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,7 +25,9 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const storeAuth = useStoreAuth();
+  const storeEvents = useStoreEvents();
   await storeAuth.init();
+  await storeEvents.init();
 
   if (storeAuth.user) {
     console.log("signed in");

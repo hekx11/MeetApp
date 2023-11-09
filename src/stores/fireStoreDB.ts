@@ -1,7 +1,7 @@
 import router from "@/router";
 import { GeoPoint, addDoc, collection, getDocs } from "firebase/firestore";
 import { defineStore } from "pinia";
-import { app, auth, db } from "../firestore/init";
+import { auth, db } from "../firestore/init";
 
 import {
   createUserWithEmailAndPassword,
@@ -12,7 +12,7 @@ import {
   type User,
 } from "firebase/auth";
 import { useStoreAuth } from "@/stores/storeAuth";
-
+import { useStoreEvents } from "./storeEvents";
 export const useFirestoreStore = defineStore("firestoredb", {
   state: () => ({
     constEventIndexes: [
@@ -30,24 +30,15 @@ export const useFirestoreStore = defineStore("firestoredb", {
       email: "",
     },
     eventsList: [] as any[],
+    eventsLocations: [] as any[],
   }),
   actions: {
     getIndexByRealId(realId: string) {
       return this.constEventIndexes.find((item) => item.realId === realId)
         ?.index;
     },
-    async getLocations() {
-      const locations: GeoPoint[] = this.getEventsList().map(
-        (item: any) => item.location
-      );
-      return locations.map((item: GeoPoint) => ({
-        lat: item.latitude,
-        lng: item.longitude,
-      }));
-    },
     async setUser( user: any ) {
       this.user.data = user;
-      console.log(user.name)
     },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
@@ -58,19 +49,16 @@ export const useFirestoreStore = defineStore("firestoredb", {
       );
       return userExists;
     },
-    async checkOrSetEvents() {
-      if (this.eventsList.length === 0) await this.setEventsList();
-      console.log(this.eventsList[0].latitude)
+    async initEvents() {
+      const eventsStore = useStoreEvents();
+      await eventsStore.init();
     },
     getEventsList() {
-      this.checkOrSetEvents();
       return this.eventsList;
     },
-    async setEventsList() {
-      const eventsCollection = collection(db, "events");
-      const eventsSnapshot = await getDocs(eventsCollection);
-      const eventsList = eventsSnapshot.docs.reverse().map((doc) => doc.data());
-      this.eventsList = eventsList;
+    async setEventsList(eventsList: any = null) {
+      this.eventsList = eventsList; 
+      console.log(this.eventsList[2].name)
       this.eventsList.forEach((item, index) => {
         this.constEventIndexes.push({
           realId: item.id,
@@ -78,7 +66,18 @@ export const useFirestoreStore = defineStore("firestoredb", {
         });
       });
     },
-
+    async initLocations() {
+      const eventsList = this.getEventsList();
+      const locations = eventsList.map((item: any) => ({
+        lat: item.location.latitude,
+        lng: item.location.longitude,
+      }));
+      this.eventsLocations = locations;
+    },
+    async getLocations() { 
+      await this.initLocations();
+      return this.eventsLocations;
+    },
     async addEvent(event: any) {
       const eventsCollection = collection(db, "events");
       await addDoc(eventsCollection, {
@@ -89,7 +88,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
         time: event.time,
         creator: this.user.data?.uid,
       });
-      await this.setEventsList();
     },
     async registerStore(email: string, password: string, name: string) {
       const response = await createUserWithEmailAndPassword(
@@ -105,8 +103,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
         });
         console.log(name)
         await this.addUserToDb({ user: response.user });
-        await this.setEventsList();
-
         router.push("/");
       } else {
         throw new Error("registration failed");
@@ -118,7 +114,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
       if (response) {
         await this.addUserToDb({ user: response.user });
         this.user.data = response.user;
-        await this.setEventsList();
         router.push("/");
       } else {
         throw new Error("login failed");

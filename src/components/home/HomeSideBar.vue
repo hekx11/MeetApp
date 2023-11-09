@@ -1,20 +1,28 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { reactive, ref } from "vue"
+import { defineEmits, onMounted } from 'vue'
 const store = useFirestoreStore()
-
+onMounted(() => {
+    getLocations()
+})
+async function getLocations() {
+    await store.getLocations()
+    console.log(store.$state.eventsLocations[1])
+}
 const eventsList = store.getEventsList()
-const eventLocations = store.getLocations() as any
+const eventLocations = store.$state.eventsLocations
+
 const emit = defineEmits(['onpress', 'createevent'])
 const searchInput = ref('')
 const isActiveArray = reactive(Array(eventsList.length).fill(false))
 const previousActive = ref(-1)
 
 function createEvent() {
-    emit('createevent')
+        emit('createevent')
 }
 function pressed(id: number) {
-    const location = eventLocations[id]
+    const location = eventLocations[id] 
     emit('onpress', location)
 }
 function setActive(id: number) {
@@ -25,25 +33,19 @@ function setActive(id: number) {
     isActiveArray[id] = !isActiveArray[id]
 }
 function filterBySearch(searchInput: string) {
-    return eventsList.filter((item: any) => {
-        return item.name.toLowerCase().includes(searchInput.toLowerCase()) || item.description.toLowerCase().includes(searchInput.toLowerCase())
-    })
-}
-function checkAnyStillActive() {
-    for (let i = 0; i < isActiveArray.length; i++) {
-        if (isActiveArray[i]) {
-            return true
-        }
+    if (Array.isArray(eventsList)) {
+        return eventsList.filter((item: any) => {
+            return item.name.toLowerCase().includes(searchInput.toLowerCase()) || item.description.toLowerCase().includes(searchInput.toLowerCase())
+        })
+    } else {
+        return []
     }
-    return false
 }
+
 function timestamptoDate(timestamp: any) {
     const date = new Date(timestamp.seconds * 1000)
     return date.toLocaleDateString()
 }
-defineExpose({
-    checkAnyStillActive
-})
 
 </script>
 <template>

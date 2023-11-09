@@ -18,7 +18,6 @@ export const useStoreAuth = defineStore("storeAuth", () => {
           console.log(state.user.name)
           state.user.id = firebaseUser.uid;
           state.user.email = firebaseUser.email;
-          storeFirestore.setEventsList();
           storeFirestore.setUser(state.user);
           //console.log('logged in:',state.user);
         } else {

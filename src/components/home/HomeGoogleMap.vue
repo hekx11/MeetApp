@@ -6,8 +6,7 @@ import { ref } from 'vue'
 
 const store = useFirestoreStore()
 const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
-const markerLocations = store.getLocations()
-
+const markerLocations = store.$state.eventsLocations
 const thisZoom = ref(12)
 const thisCenter = ref({ lat: 50.033687, lng: 22.005063 })
 const updateZoom = (zoom: number) => {
