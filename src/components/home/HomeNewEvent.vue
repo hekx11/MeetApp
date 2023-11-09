@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { GeoPoint, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 
 const store = useFirestoreStore()
-
 const name = ref('')
 const description = ref('')
 const location = ref({
@@ -12,6 +11,7 @@ const location = ref({
     lng: 0
 })
 const date = ref('')
+
 function dateToTimestamp(date: string) {
     const timestamp = Timestamp.fromDate(new Date(date))
     return timestamp
@@ -29,24 +29,23 @@ const createEvent = () => {
     location.value = {
         lat: 0,
         lng: 0
-    } 
+    }
     date.value = ''
 }
+
 </script>
 <template>
-    <div id="container">
-        <div class="createEvent">
+    <div  id="container">
+        <div class="createEvent" >
             <h1>Create New Event</h1>
             <form @submit.prevent="createEvent">
                 <label for="name">Name:</label>
                 <input type="text" id="name" v-model="name" required>
                 <label for="description">Description:</label>
                 <textarea id="description" v-model="description" required></textarea>
-                <label for="location">Location:</label>
-                <input type="text" id="location" v-model="location.lat" required>
-                <input type="text" id="location" v-model="location.lng" required>
-
-
+                <label for="locationlat">Location:</label>
+                <input type="text" id="locationlat" v-model="location.lat" required>
+                <input type="text" id="locationlng" v-model="location.lng" required>
                 <label for="date">Date:</label>
                 <input type="date" id="date" v-model="date" required>
                 <button type="submit">Create Event</button>
@@ -65,14 +64,16 @@ const createEvent = () => {
     background-color: white;
     z-index: 100;
 }
-.createEvent{
+
+.createEvent {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
 }
-.createEvent form{
+
+.createEvent form {
     display: flex;
     flex-direction: column;
     align-items: center;

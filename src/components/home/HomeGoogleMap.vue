@@ -21,6 +21,7 @@ defineExpose({
     updateCenter
 })
 
+
 </script>
 <template>
     <div id="map-container">

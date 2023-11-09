@@ -3,8 +3,6 @@ import { ref } from 'vue'
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { useForm } from 'vee-validate';
 
-const { values } = useForm();
-
 const registerToggle = ref(false)
 const loginEmail = ref('')
 const loginPassword = ref('')
@@ -16,7 +14,7 @@ function logIn(login: string, password: string) {
     store.logInStore(login, password)
 }
 function registerForm(name: string, email: string, password: string) {
-    store.registerStore(name, email, password)
+    store.registerStore(email, password, name)
 }
 
 </script>
@@ -55,7 +53,7 @@ function registerForm(name: string, email: string, password: string) {
                 </button>
 
                 <button v-if="registerToggle" style="background-color: #3E4372; color:white;"
-                    @click="registerForm(registerEmail,registerPassword,registerName)">
+                    @click="registerForm(registerName, registerEmail, registerPassword)">
                     Sign Up
                 </button>
             </div>

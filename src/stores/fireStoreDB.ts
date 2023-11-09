@@ -1,25 +1,28 @@
+import router from "@/router";
+import { GeoPoint, addDoc, collection, getDocs } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { app, auth, db } from "../firestore/init";
-import { collection, getDocs, addDoc, GeoPoint } from "firebase/firestore";
-import router from "@/router";
 
 import {
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
   type User,
 } from "firebase/auth";
+import { useStoreAuth } from "@/stores/storeAuth";
 
 export const useFirestoreStore = defineStore("firestoredb", {
   state: () => ({
-    constEventIndexes: [] as {
-      realId: "",
-      index: 0,
-    },
+    constEventIndexes: [
+      {
+        realId: "",
+        index: 0,
+      },
+    ],
     user: {
-      loggedIn: false,
-      data: null as User | null,
+      data: null as any,
     },
     //TODO add more profile data
     profileData: {
@@ -29,10 +32,11 @@ export const useFirestoreStore = defineStore("firestoredb", {
     eventsList: [] as any[],
   }),
   actions: {
-    getIndexByRealId(realId: string) { 
-      return this.constEventIndexes.find((item) => item.realId === realId)?.index
+    getIndexByRealId(realId: string) {
+      return this.constEventIndexes.find((item) => item.realId === realId)
+        ?.index;
     },
-    getLocations() {
+    async getLocations() {
       const locations: GeoPoint[] = this.getEventsList().map(
         (item: any) => item.location
       );
@@ -40,6 +44,10 @@ export const useFirestoreStore = defineStore("firestoredb", {
         lat: item.latitude,
         lng: item.longitude,
       }));
+    },
+    async setUser( user: any ) {
+      this.user.data = user;
+      console.log(user.name)
     },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
@@ -50,7 +58,12 @@ export const useFirestoreStore = defineStore("firestoredb", {
       );
       return userExists;
     },
+    async checkOrSetEvents() {
+      if (this.eventsList.length === 0) await this.setEventsList();
+      console.log(this.eventsList[0].latitude)
+    },
     getEventsList() {
+      this.checkOrSetEvents();
       return this.eventsList;
     },
     async setEventsList() {
@@ -61,10 +74,9 @@ export const useFirestoreStore = defineStore("firestoredb", {
       this.eventsList.forEach((item, index) => {
         this.constEventIndexes.push({
           realId: item.id,
-          index: index
-        })
-      })
-      console.log(this.constEventIndexes[0])
+          index: index,
+        });
+      });
     },
 
     async addEvent(event: any) {
@@ -85,14 +97,16 @@ export const useFirestoreStore = defineStore("firestoredb", {
         email,
         password
       );
+      const storeAuth = useStoreAuth();
       if (response) {
         this.user.data = response.user;
-        this.user.loggedIn = true;
         await updateProfile(response.user, {
           displayName: name,
         });
+        console.log(name)
         await this.addUserToDb({ user: response.user });
         await this.setEventsList();
+
         router.push("/");
       } else {
         throw new Error("registration failed");
@@ -100,10 +114,10 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async logInStore(email: string, password: string) {
       const response = await signInWithEmailAndPassword(auth, email, password);
+      const storeAuth = useStoreAuth();
       if (response) {
         await this.addUserToDb({ user: response.user });
         this.user.data = response.user;
-        this.user.loggedIn = true;
         await this.setEventsList();
         router.push("/");
       } else {
@@ -113,7 +127,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
     async logoutStore() {
       await signOut(auth);
       this.user.data = null;
-      this.user.loggedIn = false;
       router.push("/login");
     },
     async addUserToDb({ user }: { user: User }) {
@@ -136,6 +149,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
         date: event.date,
         creator: this.user.data?.uid,
       });
-    }
+    },
   },
 });

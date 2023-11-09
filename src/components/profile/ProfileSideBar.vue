@@ -2,11 +2,11 @@
 import { ref, onMounted} from 'vue';
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 onMounted (() => {
-    console.log(store.$state.user.data?.displayName);
+    console.log(store.$state.user.data?.name);
 })
 const store = useFirestoreStore()
 
-const profileName = store.$state.user.data?.displayName
+const profileName =  store.$state.user.data?.name
 const email = store.$state.user.data?.email
 </script>
 

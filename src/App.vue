@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
 import TheNavbar from './components/TheNavbar.vue'
-import { computed } from 'vue'
+import { onBeforeMount } from 'vue'
+import { useFirestoreStore } from '@/stores/fireStoreDB';
+
+const store = useFirestoreStore()
 
 const route = useRoute();
-console.log(route.path)
 function routeIsLogin() {
   return route.path === '/login'
 }
+onBeforeMount(() => {
+  store.setEventsList()
+})
 </script> 
 
 <template>

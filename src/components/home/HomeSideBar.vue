@@ -4,7 +4,7 @@ import { reactive, ref } from "vue"
 const store = useFirestoreStore()
 
 const eventsList = store.getEventsList()
-const eventLocations = store.getLocations()
+const eventLocations = store.getLocations() as any
 const emit = defineEmits(['onpress', 'createevent'])
 const searchInput = ref('')
 const isActiveArray = reactive(Array(eventsList.length).fill(false))

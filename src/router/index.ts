@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { auth } from "../firestore/init";
-import { useFirestoreStore } from "../stores/fireStoreDB";
+import { useStoreAuth } from "@/stores/storeAuth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,9 +22,15 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from) => {
-  const store = useFirestoreStore();
-  if (to.name !== "login" && store.$state.user.data?.email === undefined) {
+router.beforeEach(async (to) => {
+  const storeAuth = useStoreAuth();
+  await storeAuth.init();
+
+  if (storeAuth.user) {
+    console.log("signed in");
+    return;
+  } else if (!storeAuth.user && to.name !== "login") {
+    console.log("not signed in");
     return { name: "login" };
   }
 });
