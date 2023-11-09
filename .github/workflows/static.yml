@@ -23,8 +23,6 @@ jobs:
       - name: Build and deploy
         run: |
           npm run build
-          echo "VUE_APP_GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" > .env.production
-          npm run build
           npm install -g gh-pages
           gh-pages -d dist -b gh-pages
         env:
