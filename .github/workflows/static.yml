@@ -59,6 +59,5 @@ jobs:
           # Upload dist repository
           path: './dist'
       - name: Deploy to GitHub Pages
-        NODE_ENV: production
         id: deployment
         uses: actions/deploy-pages@v1
