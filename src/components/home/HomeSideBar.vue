@@ -19,7 +19,7 @@ const isActiveArray = reactive(Array(eventsList.length).fill(false))
 const previousActive = ref(-1)
 
 function createEvent() {
-        emit('createevent')
+    emit('createevent')
 }
 function pressed(id: number) {
     const location = eventLocations[id] 

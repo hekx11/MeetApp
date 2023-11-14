@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { GoogleMap, Marker } from "vue3-google-map";
 import { useFirestoreStore } from '@/stores/fireStoreDB';
-import { defineProps } from 'vue'
 import { ref } from 'vue'
 
 const store = useFirestoreStore()
