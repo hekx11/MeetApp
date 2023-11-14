@@ -40,7 +40,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
     async setUser( user: any ) {
       this.user.data = user;
     },
-    async getUserData({ user }: { user: User }) {
+    async getUserData({ user }: { user: User }) { 
       const usersCollection = collection(db, "users");
       const usersSnapshot = await getDocs(usersCollection);
       const usersList = usersSnapshot.docs.map((doc) => doc.data());
@@ -58,7 +58,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async setEventsList(eventsList: any = null) {
       this.eventsList = eventsList; 
-      console.log(this.eventsList[2].name)
       this.eventsList.forEach((item, index) => {
         this.constEventIndexes.push({
           realId: item.id,

@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
 import { useStoreAuth } from "@/stores/storeAuth";
 import { useStoreEvents } from "@/stores/storeEvents";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,9 +16,26 @@ const router = createRouter({
       component: () => import("../views/LoginView.vue"),
     },
     {
-      path: "/profile",
+      path: "/profile/",
       name: "profile",
       component: () => import("../views/ProfileView.vue"),
+      children: [
+        {
+          path: "/info",
+          name: "profile-info",
+          component: () => import("../components/profile/ProfileInfo.vue"),
+        },
+        {
+          path: "/settings",
+          name: "profile-settings",
+          component: () => import("../components/profile/ProfileSettings.vue"),
+        },
+        {
+          path: "/reviews",
+          name: "profile-reviews",
+          component: () => import("../components/profile/ProfileReviews.vue"),
+        },
+      ],
     },
   ],
 });

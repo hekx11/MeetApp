@@ -10,12 +10,15 @@ const showNewEvent = () => {
 }
 const sidebar = ref(null as any)
 const child = ref(null as any)
+const prevObj = ref(null as any)
 const centered = async (obj: any) => {
-    if(obj === null) {
+    if (prevObj.value === obj) {
         child.value.updateZoom(12)
     }
-    else
+    else {
         child.value.updateZoom(15)
+        prevObj.value = obj
+    }
     child.value.updateCenter(obj)
 }
 

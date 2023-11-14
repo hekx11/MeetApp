@@ -24,13 +24,13 @@ const email = store.$state.user.data?.email
         <div class="options">
             <ul>
                 <li>
-                    <router-link to="/profile-information">Profile Information</router-link>
+                    <router-link :to="{ name: 'profile-info'}">Profile Information</router-link>
                 </li>
                 <li>
-                    <router-link to="/settings">Settings</router-link>
+                    <router-link :to="{ name: 'profile-settings' }">Settings</router-link>
                 </li>
                 <li>
-                    <router-link to="/reviews">Reviews</router-link>
+                    <router-link :to="{ name: 'profile-reviews' }">Reviews</router-link>
                 </li>
             </ul>
         </div>
