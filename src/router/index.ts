@@ -21,17 +21,17 @@ const router = createRouter({
       component: () => import("../views/ProfileView.vue"),
       children: [
         {
-          path: "/info",
+          path: "info",
           name: "profile-info",
           component: () => import("../components/profile/ProfileInfo.vue"),
         },
         {
-          path: "/settings",
+          path: "settings",
           name: "profile-settings",
           component: () => import("../components/profile/ProfileSettings.vue"),
         },
         {
-          path: "/reviews",
+          path: "reviews",
           name: "profile-reviews",
           component: () => import("../components/profile/ProfileReviews.vue"),
         },

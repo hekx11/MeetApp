@@ -8,6 +8,7 @@ import { auth, db } from "../firestore/init";
 export const useStoreEvents = defineStore("storeEvents", () => {
   const state = {
     events: null as any,
+    ids: null as any
   };
   const storeFirestore = useFirestoreStore();
   const init = () => {
@@ -17,13 +18,15 @@ export const useStoreEvents = defineStore("storeEvents", () => {
               const eventsCollection = collection(db, "events");
               const eventsSnapshot = await getDocs(eventsCollection);
               const eventsList = eventsSnapshot.docs.reverse().map((doc) => doc.data());
-              state.events = eventsList;
+              const idList = eventsSnapshot.docs.reverse().map((doc) => doc.id)
+              state.events = eventsList; 
+              state.ids = idList;
+              storeFirestore.setIds(state.ids);
               storeFirestore.setEventsList(state.events);
               storeFirestore.initLocations();
               //console.log('logged in:',state.user);
             } else {
               state.events = null;
-              //console.log('logged out');
             }
             resolve(state.events);
         });

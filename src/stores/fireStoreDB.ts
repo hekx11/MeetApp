@@ -15,32 +15,39 @@ import { useStoreAuth } from "@/stores/storeAuth";
 import { useStoreEvents } from "./storeEvents";
 export const useFirestoreStore = defineStore("firestoredb", {
   state: () => ({
-    constEventIndexes: [
-      {
-        realId: "",
-        index: 0,
-      },
-    ],
+    constEventIndexes: [] as string[],
     user: {
       data: null as any,
     },
     //TODO add more profile data
-    profileData: {
-      name: "",
-      email: "",
-    },
+    profileData: {},
     eventsList: [] as any[],
     eventsLocations: [] as any[],
+    currentLocation: null as any,
   }),
   actions: {
-    getIndexByRealId(realId: string) {
-      return this.constEventIndexes.find((item) => item.realId === realId)
-        ?.index;
+    async getCurrentLocation() {
+      const success = (position: any) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        this.currentLocation = { lat: latitude, lng:longitude };
+        console.log(this.currentLocation)
+      };
+      const error = (err: any) => {
+        console.error(err);
+      };
+      navigator.geolocation.getCurrentPosition(success, error);
     },
-    async setUser( user: any ) {
+    setIds(ids: any) {
+      this.constEventIndexes = ids;
+    },
+    getIndex(str: string) {
+      return this.constEventIndexes.indexOf(str);
+    },
+    async setUser(user: any) {
       this.user.data = user;
     },
-    async getUserData({ user }: { user: User }) { 
+    async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
       const usersSnapshot = await getDocs(usersCollection);
       const usersList = usersSnapshot.docs.map((doc) => doc.data());
@@ -55,14 +62,11 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     getEventsList() {
       return this.eventsList;
-    },
+    },    
     async setEventsList(eventsList: any = null) {
-      this.eventsList = eventsList; 
-      this.eventsList.forEach((item, index) => {
-        this.constEventIndexes.push({
-          realId: item.id,
-          index: index,
-        });
+      this.eventsList = eventsList;
+      this.constEventIndexes.forEach((eventId, index) => {
+        eventsList[index].id = eventId;
       });
     },
     async initLocations() {
@@ -73,20 +77,9 @@ export const useFirestoreStore = defineStore("firestoredb", {
       }));
       this.eventsLocations = locations;
     },
-    async getLocations() { 
+    async getLocations() {
       await this.initLocations();
       return this.eventsLocations;
-    },
-    async addEvent(event: any) {
-      const eventsCollection = collection(db, "events");
-      await addDoc(eventsCollection, {
-        name: event.name,
-        description: event.description,
-        location: new GeoPoint(event.location.lat, event.location.lng),
-        date: event.date,
-        time: event.time,
-        creator: this.user.data?.uid,
-      });
     },
     async registerStore(email: string, password: string, name: string) {
       const response = await createUserWithEmailAndPassword(
@@ -100,7 +93,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
         await updateProfile(response.user, {
           displayName: name,
         });
-        console.log(name)
+        console.log(name);
         await this.addUserToDb({ user: response.user });
         router.push("/");
       } else {

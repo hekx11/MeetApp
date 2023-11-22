@@ -6,6 +6,7 @@ import { ref } from 'vue'
 const store = useFirestoreStore()
 const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 const markerLocations = store.$state.eventsLocations
+const userLocation = store.$state.currentLocation
 const thisZoom = ref(12)
 const thisCenter = ref({ lat: 50.033687, lng: 22.005063 })
 const updateZoom = (zoom: number) => {
@@ -19,11 +20,11 @@ defineExpose({
     updateCenter
 })
 
-
 </script>
 <template>
     <div id="map-container">
         <GoogleMap :api-key="apiKey" style="width: 100%; height: 100%" :center="thisCenter" :zoom="thisZoom">
+            <Marker :options="{position: userLocation }"/>
             <Marker v-for="(item, id) in markerLocations" :key="id" :options="{ position: item }" />
         </GoogleMap>
     </div>

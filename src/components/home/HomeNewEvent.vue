@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { Timestamp } from 'firebase/firestore';
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 
+const emit = defineEmits(['close'])
 const store = useFirestoreStore()
 const name = ref('')
 const description = ref('')
@@ -32,11 +33,18 @@ const createEvent = () => {
     }
     date.value = ''
 }
-
+function close() {
+    emit("close")
+}
 </script>
 <template>
-    <div  id="container">
-        <div class="createEvent" >
+    <div id="container">
+        <div class="createEvent">
+            <div class="button">
+                <button @click="close()">
+                    Close
+                </button>
+            </div>
             <h1>Create New Event</h1>
             <form @submit.prevent="createEvent">
                 <label for="name">Name:</label>

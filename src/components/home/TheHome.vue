@@ -31,7 +31,7 @@ const centered = async (obj: any) => {
         <Suspense>
             <HomeGoogleMap ref="child" />
         </Suspense>
-        <HomeNewEvent v-if="showCreateEvent" />
+        <HomeNewEvent v-if="showCreateEvent" @close="showCreateEvent=!showCreateEvent"/>
     </div>
 </template>
 <style scoped>
