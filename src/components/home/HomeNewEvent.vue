@@ -85,9 +85,9 @@ defineExpose({
             <h1>Create New Event</h1>
             <form @submit.prevent="createEvent">
                 <label for="name">Name:</label>
-                <input type="text" id="name" v-model="name" required>
+                <input type="text" id="name" v-model="name" required maxlength="30">
                 <label for="description">Description:</label>
-                <textarea id="description" v-model="description" required></textarea>
+                <textarea id="description" v-model="description" maxlength="200" required></textarea>
                 <label for="locationlat">Location:</label>
                 <input type="text" id="locationlat" v-model="location.lat" required>
                 <input type="text" id="locationlng" v-model="location.lng" required>

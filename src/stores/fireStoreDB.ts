@@ -1,5 +1,5 @@
 import router from "@/router";
-import { GeoPoint, addDoc, collection, getDocs } from "firebase/firestore";
+import { GeoPoint, addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { auth, db } from "../firestore/init";
 
@@ -59,11 +59,20 @@ export const useFirestoreStore = defineStore("firestoredb", {
     getEventsList() {
       return this.eventsList;
     },
+    checkEventDate(eventDate: any) {
+      //get current date, convert to Timestamp and compare with eventDate
+      const currentDate = new Date();
+      const currentTimestamp = Timestamp.fromDate(currentDate);
+      const eventTimestamp = Timestamp.fromDate(eventDate.toDate());
+      const isEventDateValid = eventTimestamp >= currentTimestamp;
+      return isEventDateValid;
+    },
     async setEventsList(eventsList: any = null) {
-      this.eventsList = eventsList;
-      this.constEventIndexes.forEach((eventId, index) => {
-        eventsList[index].id = eventId;
-      });
+      //check dates of each event and remove events with invalid dates then set this.eventsList
+      const validEventsList = eventsList.filter((event: any) =>
+        this.checkEventDate(event.date)
+      );
+      this.eventsList = validEventsList;
     },
     async initLocations() {
       const eventsList = this.getEventsList();

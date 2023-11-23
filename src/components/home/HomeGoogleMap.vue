@@ -8,6 +8,7 @@ const store = useFirestoreStore()
 const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 const markerLocations = ref(store.$state.eventsLocations)
 const userLocation = store.$state.currentLocation
+const eventsList = store.getEventsList()
 const thisZoom = ref(12)
 const thisCenter = ref(userLocation)
 const updateZoom = (zoom: number) => {
@@ -15,13 +16,22 @@ const updateZoom = (zoom: number) => {
 }
 const updateCenter = (center: any) => {
     thisCenter.value = center
+    if (markerLocations.value.some((item) => item.lat === center.lat && item.lng === center.lng)) {
+        onMarkerClick(center)
+    }
+    
 }
 defineExpose({
     updateZoom,
     updateCenter
 })
+markerLocations.value.forEach((item) => {
+    item.infoWindowVisible = false;
+});
 
-const infoWindow = ref(false)
+const userInfoWindow = ref(false)
+
+
 const userMarkerOptions = ref({
     position: userLocation,
     icon: {
@@ -39,13 +49,29 @@ const onMapClick = (event: any) => {
     };
     emit("saveCoordinates", clickedCoordinates)
 };
+const onMarkerClick = (marker: any) => {
+    // Close all other InfoWindows
+    markerLocations.value.forEach((item) => {
+        item.infoWindowVisible = false;
+    });
+    marker.infoWindowVisible = true;
+};
+
 </script>
 <template>
     <div id="map-container">
-        <GoogleMap :api-key="apiKey" style="width: 100%; height: 100%" :center="thisCenter" :zoom="thisZoom" @click="onMapClick">
-            <Marker v-for="(item, id) in markerLocations" :key="id" :options="{ position: item }" />
-            <Marker @click="infoWindow = !infoWindow" :options="userMarkerOptions">
-                <InfoWindow v-model="infoWindow">
+        <GoogleMap :api-key="apiKey" style="width: 100%; height: 100%" :center="thisCenter" :zoom="thisZoom"
+            @click="onMapClick">
+            <Marker v-for="(item, id) in markerLocations" :key="id" :options="{ position: item }"
+                @click="onMarkerClick(item)">
+                <InfoWindow v-model="item.infoWindowVisible">
+                    <div>
+                        <p> {{ eventsList[id].description }} </p>
+                    </div>
+                </InfoWindow>
+            </Marker>
+            <Marker @click="userInfoWindow = !userInfoWindow" :options="userMarkerOptions">
+                <InfoWindow v-model="userInfoWindow">
                     <div>
                         <p> Your position </p>
                     </div>
