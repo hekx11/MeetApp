@@ -17,7 +17,9 @@ export const useFirestoreStore = defineStore("firestoredb", {
   state: () => ({
     constEventIndexes: [] as string[],
     user: {
-      data: null as any,
+      displayName: null as any,
+      uid: null as any,
+      email: null as any,
     },
     //TODO add more profile data
     profileData: {},
@@ -26,17 +28,8 @@ export const useFirestoreStore = defineStore("firestoredb", {
     currentLocation: null as any,
   }),
   actions: {
-    async getCurrentLocation() {
-      const success = (position: any) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        this.currentLocation = { lat: latitude, lng:longitude };
-        console.log(this.currentLocation)
-      };
-      const error = (err: any) => {
-        console.error(err);
-      };
-      navigator.geolocation.getCurrentPosition(success, error);
+    async setUserLocation(location: any) {
+      this.currentLocation = location;
     },
     setIds(ids: any) {
       this.constEventIndexes = ids;
@@ -45,7 +38,8 @@ export const useFirestoreStore = defineStore("firestoredb", {
       return this.constEventIndexes.indexOf(str);
     },
     async setUser(user: any) {
-      this.user.data = user;
+      this.user = user;
+      console.log(this.user)
     },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
@@ -56,13 +50,15 @@ export const useFirestoreStore = defineStore("firestoredb", {
       );
       return userExists;
     },
-    async initEvents() {
+    async init() {
       const eventsStore = useStoreEvents();
       await eventsStore.init();
+      const storeAuth = useStoreAuth();
+      await storeAuth.init();
     },
     getEventsList() {
       return this.eventsList;
-    },    
+    },
     async setEventsList(eventsList: any = null) {
       this.eventsList = eventsList;
       this.constEventIndexes.forEach((eventId, index) => {
@@ -77,10 +73,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
       }));
       this.eventsLocations = locations;
     },
-    async getLocations() {
-      await this.initLocations();
-      return this.eventsLocations;
-    },
     async registerStore(email: string, password: string, name: string) {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -89,7 +81,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
       );
       const storeAuth = useStoreAuth();
       if (response) {
-        this.user.data = response.user;
+        this.user = response.user;
         await updateProfile(response.user, {
           displayName: name,
         });
@@ -105,7 +97,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
       const storeAuth = useStoreAuth();
       if (response) {
         await this.addUserToDb({ user: response.user });
-        this.user.data = response.user;
+        this.user = response.user;
         router.push("/");
       } else {
         throw new Error("login failed");
@@ -113,7 +105,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async logoutStore() {
       await signOut(auth);
-      this.user.data = null;
+      this.user = null;
       router.push("/login");
     },
     async addUserToDb({ user }: { user: User }) {
@@ -129,12 +121,13 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async addEventToDb(event: any) {
       const eventsCollection = collection(db, "events");
+      console.log(this.user.uid)
       await addDoc(eventsCollection, {
         name: event.name,
         description: event.description,
         location: new GeoPoint(event.location.lat, event.location.lng),
         date: event.date,
-        creator: this.user.data?.uid,
+        creator: this.user.uid,
       });
     },
   },

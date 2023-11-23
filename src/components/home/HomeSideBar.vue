@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { reactive, ref } from "vue"
-import { onMounted } from 'vue'
+
 const store = useFirestoreStore()
-onMounted(() => {
-    getLocations()
-})
-async function getLocations() {
-    await store.getLocations()
-}
+
 const eventsList = store.getEventsList()
 const eventLocations = store.$state.eventsLocations
 

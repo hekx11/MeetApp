@@ -2,7 +2,7 @@
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 
 const store = useFirestoreStore()
-const user = store.$state.user.data?.name
+const user = store.$state.user.displayName;
 </script>
 
 <template>
