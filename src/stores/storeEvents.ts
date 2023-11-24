@@ -32,8 +32,8 @@ export const useStoreEvents = defineStore("storeEvents", () => {
               
               state.events = eventsList; 
               state.ids = idList;
-              storeFirestore.setIds(state.ids);
               storeFirestore.setEventsList(state.events);
+              storeFirestore.setIds(state.ids);
               storeFirestore.initLocations();
               storeFirestore.setUserLocation(state.currentLocation)
               //console.log('logged in:',state.user);

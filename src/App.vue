@@ -2,12 +2,15 @@
 import { RouterView, useRoute } from 'vue-router'
 import TheNavbar from './components/TheNavbar.vue'
 import { useFirestoreStore } from '@/stores/fireStoreDB';
+import { onBeforeMount } from 'vue'
 const store = useFirestoreStore()
 const route = useRoute();
 function routeIsLogin() {
   return route.path === '/login'
 }
-
+onBeforeMount(() => {
+  store.init()
+})
 
 </script> 
 

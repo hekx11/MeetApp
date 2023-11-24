@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { reactive, ref } from "vue"
+import {onMounted} from 'vue'
 
 const store = useFirestoreStore()
-
 const eventsList = store.getEventsList()
 const eventLocations = store.$state.eventsLocations
 
@@ -11,13 +11,15 @@ const emit = defineEmits(['onpress', 'createevent'])
 const searchInput = ref('')
 const isActiveArray = reactive(Array(eventsList.length).fill(false))
 const previousActive = ref(-1)
-const indexes = store.$state.constEventIndexes
+const indexes = ref(store.$state.constEventIndexes)
 
 function createEvent() {
     emit('createevent')
 }
 function pressed(id: number) {
     const location = eventLocations[id]
+    console.log(eventsList[0])
+    console.log(indexes.value)
     emit('onpress', location)
 }
 function setActive(id: number) {

@@ -31,15 +31,25 @@ export const useFirestoreStore = defineStore("firestoredb", {
     async setUserLocation(location: any) {
       this.currentLocation = location;
     },
-    setIds(ids: any) {
+    async setIds(ids: any) {
       this.constEventIndexes = ids;
+      await this.addIdsToEventsList();
+    },
+    //add constEventIndexes to eventsList
+    async addIdsToEventsList() {
+      const eventsList = this.getEventsList();
+      const eventsListWithIds = eventsList.map((item: any, index: number) => ({
+        ...item,
+        id: this.constEventIndexes[index],
+      }));
+      this.eventsList = eventsListWithIds;
     },
     getIndex(str: string) {
       return this.constEventIndexes.indexOf(str);
     },
     async setUser(user: any) {
       this.user = user;
-      console.log(this.user)
+      console.log(this.user);
     },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
@@ -67,12 +77,8 @@ export const useFirestoreStore = defineStore("firestoredb", {
       const isEventDateValid = eventTimestamp >= currentTimestamp;
       return isEventDateValid;
     },
-    async setEventsList(eventsList: any = null) {
-      //check dates of each event and remove events with invalid dates then set this.eventsList
-      const validEventsList = eventsList.filter((event: any) =>
-        this.checkEventDate(event.date)
-      );
-      this.eventsList = validEventsList;
+    async setEventsList(eventsList: any) {
+      this.eventsList = eventsList;
     },
     async initLocations() {
       const eventsList = this.getEventsList();
@@ -80,6 +86,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
         lat: item.location.latitude,
         lng: item.location.longitude,
       }));
+      console.log(locations);
       this.eventsLocations = locations;
     },
     async registerStore(email: string, password: string, name: string) {
@@ -130,7 +137,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async addEventToDb(event: any) {
       const eventsCollection = collection(db, "events");
-      console.log(this.user.uid)
+      console.log(this.user.uid);
       await addDoc(eventsCollection, {
         name: event.name,
         description: event.description,

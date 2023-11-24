@@ -16,6 +16,7 @@ const updateZoom = (zoom: number) => {
 }
 const updateCenter = (center: any) => {
     thisCenter.value = center
+    console.log(center)
     if (markerLocations.value.some((item) => item.lat === center.lat && item.lng === center.lng)) {
         onMarkerClick(center)
     }
