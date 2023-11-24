@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { reactive, ref } from "vue"
-import { defineEmits, onMounted } from 'vue'
+
 const store = useFirestoreStore()
-onMounted(() => {
-    getLocations()
-})
-async function getLocations() {
-    await store.getLocations()
-    console.log(store.$state.eventsLocations[1])
-}
+
 const eventsList = store.getEventsList()
 const eventLocations = store.$state.eventsLocations
 
@@ -17,16 +11,17 @@ const emit = defineEmits(['onpress', 'createevent'])
 const searchInput = ref('')
 const isActiveArray = reactive(Array(eventsList.length).fill(false))
 const previousActive = ref(-1)
+const indexes = store.$state.constEventIndexes
 
 function createEvent() {
     emit('createevent')
 }
 function pressed(id: number) {
-    const location = eventLocations[id] 
+    const location = eventLocations[id]
     emit('onpress', location)
 }
 function setActive(id: number) {
-    if(previousActive.value !== -1 && previousActive.value !== id) {
+    if (previousActive.value !== -1 && previousActive.value !== id) {
         isActiveArray[previousActive.value] = false
     }
     previousActive.value = id
@@ -57,7 +52,7 @@ function timestamptoDate(timestamp: any) {
             <h2>Events list</h2>
             <div class="events">
                 <div v-for="(item, id) in filterBySearch(searchInput)" :key="id" class="event-item">
-                    <div @click.prevent="setActive(id), pressed(id)">
+                    <div @click.prevent="setActive(indexes.indexOf(item.id)), pressed(indexes.indexOf(item.id))">
                         <h3>{{ item.name }}</h3>
                         <p>{{ timestamptoDate(item.date) }}</p>
                         <p v-if="isActiveArray[id]">{{ item.description }}</p>

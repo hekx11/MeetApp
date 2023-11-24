@@ -15,7 +15,7 @@ function logout() {
             <h2><router-link to="/">MeetApp</router-link></h2>  
         </div>
         <div class="navbar-right">
-            <router-link to="/profile">Profile</router-link>
+            <router-link to="/profile/info">Profile</router-link>
             <button @click="logout">Logout</button>
         </div>
     </nav>

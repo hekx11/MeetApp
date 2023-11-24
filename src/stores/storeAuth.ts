@@ -6,22 +6,26 @@ import { useFirestoreStore } from "@/stores/fireStoreDB";
 
 export const useStoreAuth = defineStore("storeAuth", () => {
   const state = {
-    user: null as any,
+    user: {
+      displayName: null as any,
+      uid: null as any,
+      email: null as any,
+    },
   };
   const storeFirestore = useFirestoreStore();
   const init = () => {
     return new Promise((resolve) => {
       onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-          state.user = {};
-          state.user.name = firebaseUser.displayName;
-          console.log(state.user.name)
-          state.user.id = firebaseUser.uid;
+          state.user.displayName = firebaseUser.displayName;
+          state.user.uid = firebaseUser.uid;
           state.user.email = firebaseUser.email;
           storeFirestore.setUser(state.user);
-          //console.log('logged in:',state.user);
+          console.log('logged in:',state.user);
         } else {
-          state.user = null;
+          state.user.displayName = null;
+          state.user.uid = null;
+          state.user.email = null;
           //console.log('logged out');
         }
         resolve(state.user);

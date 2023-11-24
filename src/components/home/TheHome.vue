@@ -10,6 +10,7 @@ const showNewEvent = () => {
 }
 const sidebar = ref(null as any)
 const child = ref(null as any)
+const newEvent = ref(null as any)
 const prevObj = ref(null as any)
 const centered = async (obj: any) => {
     if (prevObj.value === obj) {
@@ -21,7 +22,9 @@ const centered = async (obj: any) => {
     }
     child.value.updateCenter(obj)
 }
-
+const pushCoordinates = (coordinates: any) => {
+    newEvent.value.updateLocation(coordinates)
+}
 </script>
 <template>
     <div>
@@ -29,9 +32,9 @@ const centered = async (obj: any) => {
             <HomeSideBar @onpress="centered" ref="sidebar" @createevent="showNewEvent" />
         </Suspense>
         <Suspense>
-            <HomeGoogleMap ref="child" />
+            <HomeGoogleMap ref="child" @saveCoordinates="pushCoordinates"/>
         </Suspense>
-        <HomeNewEvent v-if="showCreateEvent" />
+        <HomeNewEvent v-if="showCreateEvent" @close="showCreateEvent=!showCreateEvent" ref="newEvent"/>
     </div>
 </template>
 <style scoped>

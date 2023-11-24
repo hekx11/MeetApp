@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted} from 'vue';
 import { useFirestoreStore } from '@/stores/fireStoreDB';
-onMounted (() => {
-    console.log(store.$state.user.data?.name);
-})
+
 const store = useFirestoreStore()
 
-const profileName =  store.$state.user.data?.name
-const email = store.$state.user.data?.email
+const profileName = store.$state.user.displayName
+const email = store.$state.user.email
 </script>
 
 <template>
