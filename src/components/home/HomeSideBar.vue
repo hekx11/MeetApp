@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useFirestoreStore } from '@/stores/fireStoreDB';
 import { reactive, ref } from "vue"
-import {onMounted} from 'vue'
 
 const store = useFirestoreStore()
 const eventsList = store.getEventsList()
@@ -18,8 +17,6 @@ function createEvent() {
 }
 function pressed(id: number) {
     const location = eventLocations[id]
-    console.log(eventsList[0])
-    console.log(indexes.value)
     emit('onpress', location)
 }
 function setActive(id: number) {
@@ -32,7 +29,8 @@ function setActive(id: number) {
 function filterBySearch(searchInput: string) {
     if (Array.isArray(eventsList)) {
         return eventsList.filter((item: any) => {
-            return item.name.toLowerCase().includes(searchInput.toLowerCase()) || item.description.toLowerCase().includes(searchInput.toLowerCase())
+            return item.name.toLowerCase().includes(searchInput.toLowerCase())
+                || item.description.toLowerCase().includes(searchInput.toLowerCase())
         })
     } else {
         return []

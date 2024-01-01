@@ -1,5 +1,6 @@
 import { useStoreAuth } from "@/stores/storeAuth";
 import { useStoreEvents } from "@/stores/storeEvents";
+import { useFirestoreStore } from "@/stores/fireStoreDB";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -30,11 +31,6 @@ const router = createRouter({
           name: "profile-settings",
           component: () => import("../components/profile/ProfileSettings.vue"),
         },
-        {
-          path: "reviews",
-          name: "profile-reviews",
-          component: () => import("../components/profile/ProfileReviews.vue"),
-        },
       ],
     },
   ],
@@ -43,14 +39,14 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const storeAuth = useStoreAuth();
   const storeEvents = useStoreEvents();
+  const storeFirestore = useFirestoreStore();
   await storeAuth.init();
   await storeEvents.init();
 
-  if (storeAuth.user) {
-    console.log("signed in");
+  if (storeFirestore.user!= null) {
+    console.log(storeFirestore.user)
     return;
-  } else if (!storeAuth.user && to.name !== "login") {
-    console.log("not signed in");
+  } else if (!storeFirestore.user && to.name !== "login") {
     return { name: "login" };
   }
 });

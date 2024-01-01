@@ -22,7 +22,7 @@ export const useFirestoreStore = defineStore("firestoredb", {
       email: null as any,
     },
     //TODO add more profile data
-    profileData: {},
+    profileData: null as any,
     eventsList: [] as any[],
     eventsLocations: [] as any[],
     currentLocation: null as any,
@@ -49,7 +49,14 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async setUser(user: any) {
       this.user = user;
-      console.log(this.user);
+      const usersCollection = collection(db, "users");
+      const usersSnapshot = await getDocs(usersCollection);
+      const usersList = usersSnapshot.docs.map((doc) => doc.data());
+      const userProfile = usersList.find(
+        (userItem) => userItem.uid === this.user.uid
+      );
+      this.profileData = userProfile;
+      console.log(this.profileData.name)
     },
     async getUserData({ user }: { user: User }) {
       const usersCollection = collection(db, "users");
@@ -86,7 +93,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
         lat: item.location.latitude,
         lng: item.location.longitude,
       }));
-      console.log(locations);
       this.eventsLocations = locations;
     },
     async registerStore(email: string, password: string, name: string) {
@@ -95,7 +101,6 @@ export const useFirestoreStore = defineStore("firestoredb", {
         email,
         password
       );
-      const storeAuth = useStoreAuth();
       if (response) {
         this.user = response.user;
         await updateProfile(response.user, {
@@ -121,7 +126,9 @@ export const useFirestoreStore = defineStore("firestoredb", {
     },
     async logoutStore() {
       await signOut(auth);
-      this.user = null;
+      this.user.displayName = null
+      this.user.email = null
+      this.user.uid = null
       router.push("/login");
     },
     async addUserToDb({ user }: { user: User }) {

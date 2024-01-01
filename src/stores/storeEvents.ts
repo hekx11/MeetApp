@@ -36,7 +36,6 @@ export const useStoreEvents = defineStore("storeEvents", () => {
               storeFirestore.setIds(state.ids);
               storeFirestore.initLocations();
               storeFirestore.setUserLocation(state.currentLocation)
-              //console.log('logged in:',state.user);
             } else {
               state.events = null;
             }
@@ -45,7 +44,7 @@ export const useStoreEvents = defineStore("storeEvents", () => {
     });
   };
   return {
-    ...toRefs(state), // To expose reactive properties
+    ...toRefs(state),
     init,
   };
 });

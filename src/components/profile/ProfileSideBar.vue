@@ -3,8 +3,8 @@ import { useFirestoreStore } from '@/stores/fireStoreDB';
 
 const store = useFirestoreStore()
 
-const profileName = store.$state.user.displayName
-const email = store.$state.user.email
+const profileName = store.$state.profileData.name
+const email = store.$state.profileData.email
 </script>
 
 <template>
@@ -14,20 +14,17 @@ const email = store.$state.user.email
                 <img src="https://via.placeholder.com/150" alt="Profile Avatar" />
             </div>
             <div class="details">
-                <p>{{ profileName }}</p>
+                <p style="font-weight: bold;">{{ profileName }}</p>
                 <p>{{ email }}</p>
             </div>
         </div>
         <div class="options">
             <ul>
                 <li>
-                    <router-link :to="{ name: 'profile-info'}">Profile Information</router-link>
+                    <router-link :to="{ name: 'profile-info'}" style="font-weight: bold;">Profile Information</router-link>
                 </li>
                 <li>
-                    <router-link :to="{ name: 'profile-settings' }">Settings</router-link>
-                </li>
-                <li>
-                    <router-link :to="{ name: 'profile-reviews' }">Reviews</router-link>
+                    <router-link :to="{ name: 'profile-settings' }" style="font-weight: bold;">Settings</router-link>
                 </li>
             </ul>
         </div>
@@ -81,6 +78,10 @@ const email = store.$state.user.email
 
 .options li {
     margin-bottom: 0.5rem;
+    border: 1px solid #6d6d6d;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    background-color: #fff;
 }
 
 .options li a {
